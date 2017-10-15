@@ -11,6 +11,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
 
+import javax.net.ssl.HttpsURLConnection;
+
 public class MainActivity extends AppCompatActivity {
 
     public class DownnloadTask extends AsyncTask<String,Void,String> //Type of variable that instructs to this class to do what to do\
@@ -49,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
             }
             catch (Exception e){
                 e.printStackTrace();
+                Log.i("he","fuck");
                 return "Failed";
             }
 
@@ -63,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         String result = null;
         try {
 
-            result = task.execute("https://www.instagram.com/").get();
+            result = task.execute("https://google.com").get();
 
         } catch (InterruptedException e) {
 
