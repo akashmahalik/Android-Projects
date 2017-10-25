@@ -1,7 +1,9 @@
 package com.akash.notes;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,8 +52,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         ListView listView = (ListView)findViewById(R.id.listView);
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("com.akash.notes", Context.MODE_PRIVATE);
 
-        notes.add("Example note");
+        HashSet<String> set= (HashSet<String>)sharedPreferences.getStringSet("notes",null);
+        if(set==null){
+            notes.add("Example note");
+        }
+        else{
+            notes = new ArrayList<>(set);
+        }
 
         arrayAdapter = new ArrayAdapter(MainActivity.this,android.R.layout.simple_list_item_1,notes);
 
@@ -83,6 +93,10 @@ public class MainActivity extends AppCompatActivity {
                            public void onClick(DialogInterface dialog, int which) {
                                notes.remove(position);
                                arrayAdapter.notifyDataSetChanged();
+                               SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("com.akash.notes", Context.MODE_PRIVATE);
+
+                               HashSet<String> set= new HashSet<>(MainActivity.notes);
+                               sharedPreferences.edit().putStringSet("notes",set).apply();
                            }
 
                        })
