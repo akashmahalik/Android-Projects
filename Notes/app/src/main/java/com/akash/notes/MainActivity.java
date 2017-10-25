@@ -1,6 +1,8 @@
 package com.akash.notes;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -62,6 +64,32 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("noteId",position);
                 Log.i("aise",Integer.toString(position));
                 startActivity(intent);
+            }
+        });
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+
+                int itemToDelete =position;
+
+
+                        new AlertDialog.Builder(MainActivity.this)
+                       .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle("Are you sure")
+                       .setMessage("Do you want to delete this note?")
+                       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                           @Override
+                           public void onClick(DialogInterface dialog, int which) {
+                               notes.remove(position);
+                               arrayAdapter.notifyDataSetChanged();
+                           }
+
+                       })
+                       .setNegativeButton("No",null)
+                       .show();
+
+                return true; // Only for long click
             }
         });
     }
