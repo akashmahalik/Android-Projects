@@ -1,5 +1,6 @@
 package com.akash.newsreader;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
@@ -7,6 +8,8 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -44,6 +47,16 @@ public class MainActivity extends AppCompatActivity {
 
         listView.setAdapter(arrayAdapter);
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Intent intent = new Intent(getApplicationContext(),ArticleActivity.class);
+                intent.putExtra("content",content.get(position));
+                startActivity(intent);
+
+            }
+        });
         articlesDB = this.openOrCreateDatabase("Articles",MODE_PRIVATE,null);
 
         articlesDB.execSQL("CREATE TABLE IF NOT EXISTS articles (id INTEGER PRIMARY KEY , articleId INTEGER,title VARCHAR,content VARCHAR)");
@@ -52,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
         DownloadTask task = new DownloadTask();
         try {
-            task.execute("https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty");
+            task.execute("https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty");  //Whenever u want to update
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -61,12 +74,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void updateListView(){
-       Log.i("Helo","dd");
-        Cursor c =
-                articlesDB.rawQuery("SELECT * FROM articles",null);
+
+        Cursor c =articlesDB.rawQuery("SELECT * FROM articles",null);
         int contentIndex = c.getColumnIndex("content");
         int titleIndex = c.getColumnIndex("title");
-        Log.i("w",Boolean.toString(c.moveToFirst()));
+
         if(c.moveToFirst()){
             titles.clear();
             content.clear();
@@ -106,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
                     data = reader.read();
                 }
 
-                Log.i("URL content",result);
+
 
                 JSONArray jsonArray = new JSONArray(result);
                 int numberOfItems = min(2,jsonArray.length());
@@ -136,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
                     // Sometimes either there's no title or url
 
                     if(!jsonObject.isNull("title") && !jsonObject.isNull("url") ) {
-                        Log.i("ada","dd");
+
                         String articleTitle = jsonObject.getString("title");
 
                         String articleURL = jsonObject.getString("url");
